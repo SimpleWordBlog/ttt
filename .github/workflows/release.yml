@@ -4,8 +4,8 @@ on:
   push:
     branches:
       - main
-  tags:
-    - 'v*'  # 监听标签推送
+    tags:
+      - 'v*'  # 监听以 v 开头的标签推送
 
 jobs:
   build:
