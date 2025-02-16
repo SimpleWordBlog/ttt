@@ -1,31 +1,34 @@
-name: Build and Release Hello World
+name: Windows Build
 
 on:
   push:
-    branches:
-      - main
     tags:
-      - 'v*'  # 监听以 v 开头的标签推送
+      - 'v*'
 
 jobs:
   build:
-    runs-on: windows-latest  # 使用 Windows 环境
+    runs-on: windows-latest
+    permissions:
+      contents: write  # 必须显式声明写权限
 
     steps:
     - name: Checkout code
-      uses: actions/checkout@v3
+      uses: actions/checkout@v4
+      with:
+        fetch-depth: 0  # 确保获取完整提交历史
 
-    - name: Install MinGW (Windows Compiler)
-      run: |
-        choco install mingw
+    - name: Install MinGW
+      run: choco install mingw -y
 
-    - name: Compile hello.c to hello.exe
-      run: |
-        gcc hello.c -o hello.exe
+    - name: Compile
+      run: gcc hello.c -o hello.exe
 
-    - name: Upload to GitHub Releases
+    - name: Show files (调试)
+      run: dir
+
+    - name: Create Release
       uses: softprops/action-gh-release@v1
       with:
+        tag_name: ${{ github.ref }}
         files: hello.exe
-      env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        token: ${{ secrets.GITHUB_TOKEN }}  # 关键参数传递方式变更
