@@ -1,0 +1,31 @@
+name: Build and Release Hello World
+
+on:
+  push:
+    branches:
+      - main
+  tags:
+    - 'v*'  # 监听标签推送
+
+jobs:
+  build:
+    runs-on: windows-latest  # 使用 Windows 环境
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v3
+
+    - name: Install MinGW (Windows Compiler)
+      run: |
+        choco install mingw
+
+    - name: Compile hello.c to hello.exe
+      run: |
+        gcc hello.c -o hello.exe
+
+    - name: Upload to GitHub Releases
+      uses: softprops/action-gh-release@v1
+      with:
+        files: hello.exe
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
